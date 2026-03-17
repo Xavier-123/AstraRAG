@@ -91,9 +91,7 @@ def get_embeddings(config: SystemConfig) -> Any:
     """
     llm_cfg = config.llm
     if llm_cfg.api_key:
-        kwargs: dict[str, Any] = {"model": "text-embedding-3-small"}
-        if llm_cfg.api_key:
-            kwargs["api_key"] = llm_cfg.api_key
+        kwargs: dict[str, Any] = {"model": "text-embedding-3-small", "api_key": llm_cfg.api_key}
         if llm_cfg.base_url:
             kwargs["base_url"] = llm_cfg.base_url
         return OpenAIEmbeddings(**kwargs)
