@@ -47,8 +47,9 @@ logger = logging.getLogger(__name__)
 
 Document = Dict[str, Any]
 
-_MAX_DOC_TOKENS = 600  # Documents longer than this are compressed
+_MAX_DOC_TOKENS = 600    # Documents longer than this are compressed
 _MIN_RERANK_SCORE = 0.3  # Hard floor for inclusion
+_MAX_SUMMARISE_INPUT_TOKENS = 6000  # Max input tokens sent to LLM for summarisation
 
 
 class ContextEngineeringAgent(BaseAgent):
@@ -189,9 +190,11 @@ class ContextEngineeringAgent(BaseAgent):
 
     def _summarise_context(self, context: str, query: str, budget: int) -> str:
         try:
+            # Truncate input before sending to LLM to avoid exceeding context window
+            safe_context = truncate_to_token_limit(context, _MAX_SUMMARISE_INPUT_TOKENS, self.config.llm.model)
             messages = [
                 SystemMessage(content=self._SUMMARISE_SYSTEM),
-                HumanMessage(content=f"Query: {query}\n\nContext:\n{context}"),
+                HumanMessage(content=f"Query: {query}\n\nContext:\n{safe_context}"),
             ]
             return self._call_llm(messages).content
         except Exception:

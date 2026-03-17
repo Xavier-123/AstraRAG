@@ -50,7 +50,8 @@ from astra_rag.core.state import GraphState
 logger = logging.getLogger(__name__)
 
 _NEED_MORE_INFO_RE = re.compile(r"\[NEED_MORE_INFO:\s*(.+?)\]", re.DOTALL)
-_MAX_HOPS = 3  # Safety limit for multi-hop iterations
+_MAX_HOPS = 3              # Safety limit for multi-hop iterations
+_MAX_REASONING_LOG_CHARS = 500  # Max chars stored per hop in reasoning_chain log
 
 
 # ── Tool registry ─────────────────────────────────────────────────────────────
@@ -191,7 +192,7 @@ class ReasoningAgent(BaseAgent):
             }
 
         raw = self._handle_tool_calls(raw)
-        chain.append(f"[CoT] {raw[:500]}")
+        chain.append(f"[CoT] {raw[:_MAX_REASONING_LOG_CHARS]}")
         answer = self._extract_answer(raw)
         return {"reasoning_chain": chain, "answer": answer}
 
@@ -236,7 +237,7 @@ class ReasoningAgent(BaseAgent):
             }
 
         raw = self._handle_tool_calls(raw)
-        chain.append(f"[Hop {iteration + 1}] {raw[:500]}")
+        chain.append(f"[Hop {iteration + 1}] {raw[:_MAX_REASONING_LOG_CHARS]}")
 
         # Check if LLM requested more information
         more_info_match = _NEED_MORE_INFO_RE.search(raw)
