@@ -3,6 +3,7 @@ astra_rag/agents/__init__.py
 """
 
 from astra_rag.agents.context_engineering import ContextEngineeringAgent
+from astra_rag.agents.llamaindex_vector_retriever import LlamaIndexVectorRetriever
 from astra_rag.agents.multi_retriever import MultiRetrieverAgent
 from astra_rag.agents.query_understanding import QueryUnderstandingAgent
 from astra_rag.agents.reasoning import ReasoningAgent
@@ -20,4 +21,5 @@ __all__ = [
     "ContextEngineeringAgent",
     "ReasoningAgent",
     "ReflectionAgent",
+    "LlamaIndexVectorRetriever",
 ]
